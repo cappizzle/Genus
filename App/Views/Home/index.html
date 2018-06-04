@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Genus{% endblock %}
+
+{% block body %}
+
+<div class="jumbotron" ng-cloak>
+<form class="form-vertical" name="userForm" ng-controller="formController" novalidate>
+    <div class="container text-center my-2 mx-auto" ng-show="step == 0">
+        <h4>Welcome to Genus</h4>
+        <h6>Let's gather some information and get you connected</h6>
+        <div class="container my-5 mx-auto w-50">
+          <button type="button" class="btn btn-outline-dark" ng-click="search()">Find Users</button>
+          <button class="btn btn-primary" ng-click="next()">Create Account</button>
+        </div>
+    </div>
+    <div class="container my-2 mx-auto w-50">
+      <div class="form-group" ng-show="step == 1">
+          <h4 class="text-center">Please provide some basic information</h4>
+          <div class="form-group">
+             <label for="name">Your name</label>
+             <input class="form-control" type="text" id="name" name="name" ng-model="name" />
+          </div>
+          <div class="form-group">
+              <label for="edipi">Your EDIPI number</label>
+              <input class="form-control" type="text" id="edipi" name="edipi" ng-model="edipi" />
+          </div>
+          <div class="form-group">
+              <label for="email">Your work email</label>
+              <input class="form-control" type="emai" id="email" name="email" ng-model="email" />
+          </div>
+          <div class="form-group">
+              <label for="workNumber">Your work number</label>
+              <input class="form-control" type="text" id="workNumber" name="workNumber" ng-model="workNumber" />
+          </div>
+          <div class="form-group">
+              <label for="rank">Your current rank</label>
+              <select class="form-control" name="rank" ng-model="rank" ng-options="item for item in ranks"></select>
+          </div>
+          <div class="form-group">
+              <label for="unit">Your unit</label>
+              <select class="form-control" name="unit" ng-model="unit" ng-options="item for item in units"></select>
+          </div>
+          <div class="container my-5 mx-auto w-50">
+              <button class="btn btn-default" ng-click="prev()"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;Previous</button>
+              <button class="btn btn-primary" ng-click="next()"><i class="fas fa-long-arrow-alt-right"></i>&nbsp;Next</button>
+          </div>
+      </div>
+    </div>
+    <div class="form-group" ng-show="step == 2">
+        <div class="container my-2 mx-auto w-50">
+          <input class="form-control" type="text" ng-model="talentInput" size="50" placeholder="Add an interest">
+          <div class="container my-3 w-50 mx-auto">
+            <div class="my-2 well">
+              <label for="skill_level">Experience Level</label>
+              <input type="range" class="form-control-range" id="skill_level" ng-model="skill_level" min="{[{ min }]}" max="{[{ max }]}">
+            </div>
+            <div class="my-2 well">
+              <label for="interest_level">Interest Level</lable>
+              <input type="range" class="form-control-range" id="interest_level" ng-model="interest_level" min="{[{ min }]}" max="{[{ max }]}">
+            </div>
+          </div>
+          <div class="btn-group float-right">
+            <button type="button" class="btn btn-primary rounded" ng-click="talentAdd()"><i class="fas fa-plus"></i>&nbsp;Add</button>
+          </div>
+          <div class="container my-5 mx-auto py-5">
+            <div ng-repeat="x in talentList">
+              <span ng-bind="x.talentText"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="container my-5 mx-auto w-50">
+            <button class="btn btn-default" ng-click="prev()"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;Previous</button>
+            <button class="btn btn-primary" ng-click="next()"><i class="fas fa-long-arrow-alt-right"></i>&nbsp;Next</button>
+        </div>
+    </div>
+    <div class="form-group" ng-show="step == 3">
+          <div class="container my-5 mx-auto">
+              <h4 class="text-center">Let's Review</h4>
+              <div class="container text-left">
+                <div class="media">
+                  <img src="http://via.placeholder.com/150x150" class="align-self-center mr-3" style="width:25%;">
+                  <div class="media-body">
+                    <h4>{[{ formParams.rank }]} {[{ formParams.name }]}</h4>
+                    <p class="text-left">Your EDIPI Number: {[{ formParams.edipi }]}</p>
+                    <p class="text-left">Your email: {[{ formParams.email }]}</p>
+                    <p class="text-left">Your phone number: {[{ formParams.number }]}</p>
+                    <p class="text-left">Your Unit: {[{ formParams.unit }]}</p>
+                    <div class="row">
+                      <div class="col-md-3" ng-repeat="skill in formParams.skills">
+                          <h6 class="text-center">{[{ skill.talentText }]}</h6>
+                          <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" ng-style="showSkillPercentage(skill)">
+                              Skill Level
+                            </div>
+                          </div>
+                          <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" ng-style="showInterestLevel(skill)">
+                              Interest Level
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="container py-3">
+                  <button class="btn btn-default" ng-click="prev()"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;Make Changes</button>
+                  <button class="btn btn-primary" ng-click="submit()">Submit</button>
+                </div>
+              </div>
+          </div>
+      </div>
+      <div class="form-group" ng-show="step == 4">
+          <div class="container mt-5 w-50 mx-auto">
+            <h4 class="text-center">Search for a needed skill</h4>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-info"><i class="fas fa-search"></i></span>
+              </div>
+              <input type="text" class="form-control" ng-model="skillFilter">
+            </div>
+          </div>
+          <div ng-repeat="skill in skills | filter: skillFilter" ng-show="skillFilter">
+              <h4 class="text-center">{[{ skill.skill_name }]}</h4>
+              <div class="card-deck" ng-repeat="user in users" ng-if="user.edipi == skill.edipi">
+                <div class="card" style="width:25%">
+                  <div class="card-header">{[{ user.rank }]} {[{ user.name }]}</div>
+                  <div class="card-body">
+                      <p><strong>{[{ user.unit }]}</strong></p>
+                  </div>
+                  <div class="card-footer">
+                      <button type="button" class="btn btn-outline-secondary" ng-click="viewCard(user.name)">View Card</button>
+                  </div>
+                </div>
+              </div>
+          </div>
+      </div>
+      <div class="form-group" ng-show="step == 5">
+          <div class="container w-50 mx-auto">
+              <div class="card" syle="width:400px;" ng-repeat="user in users | filter: selectedUser" ng-show="selectedUser">
+                  <div class="card-header">
+                      {[{ user.rank }]} {[{ user.name }]}
+                  </div>
+                  <div class="card-body">
+                    <p><strong>Unit:</strong> {[{ user.unit }]}</p>
+                    <p><strong>Email:</strong> {[{ user.email }]}</p>
+                    <p><strong>Number:</strong> {[{ user.number }]}</p>
+                    <div class="row">
+                      <div class="col-md-6 mt-5" ng-repeat="skill in skills" ng-if="skill.edipi == user.edipi">
+                            <h6 class="text-center">{[{ skill.skill_name }]}</h6>
+                            <div class="progress">
+                              <div class="progress-bar progress-bar-striped progress-bar-animated" ng-style="revealSkillPercentage(skill)">
+                                Skill Level
+                              </div>
+                            </div>
+                            <div class="progress">
+                              <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" ng-style="revealInterestLevel(skill)">
+                                Interest Level
+                              </div>
+                            </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-footer">
+                    <div class="container mx-auto">
+                      <button class="btn btn-outline-dark" ng-click="prev()"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;Back to Search</button>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="form-group" ng-show="step == 6">
+
+      </div>
+</form>
+
+</div>
+{% endblock %}

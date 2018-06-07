@@ -5,7 +5,7 @@
 {% block body %}
 
 <div class="jumbotron" ng-cloak>
-<form class="form-vertical" name="userForm" ng-controller="formController" novalidate>
+<form class="form-vertical" name="userForm" ng-controller="formController" ng-init="updateData()" novalidate>
     <div class="container text-center my-2 mx-auto" ng-show="step == 0">
         <h4>Welcome to Genus</h4>
         <h6>Let's gather some information and get you connected</h6>
@@ -120,8 +120,11 @@
               </div>
               <input type="text" class="form-control" ng-model="skillFilter">
             </div>
+            <div class="container mt-5 w-50 mx-auto">
+                <button type="button" class="btn btn-outline-dark" ng-click="home()"><i class="fas fa-home"></i>&nbsp;Home</button>
+            </div>
           </div>
-          <div ng-repeat="skill in skills | filter: skillFilter" ng-show="skillFilter">
+          <div ng-repeat="skill in skills | filter: skillFilter | limitTo : 1" ng-show="skillFilter">
               <h4 class="text-center">{[{ skill.skill_name }]}</h4>
               <div class="card-deck" ng-repeat="user in users" ng-if="user.edipi == skill.edipi">
                 <div class="card" style="width:25%">

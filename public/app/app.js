@@ -4,7 +4,7 @@ var app = angular.module("talentApp", ['ngAnimate']).config(function($interpolat
 
 
 
-app.controller('formController', ['$scope', '$http', '$filter',  function($scope, $http, $filter){
+app.controller('formController', ['$scope', '$http', '$filter', '$interval',  function($scope, $http, $filter, $interval){
 
     $scope.formParams = {};
     $scope.step = 0;
@@ -55,19 +55,32 @@ app.controller('formController', ['$scope', '$http', '$filter',  function($scope
       $scope.step++;
     }
 
-    $http.get('gather/return').then(function(response){
-        $scope.users = response.data;
-        console.log(response.data);
-    });
-    $http.get('gather/skills').then(function(response){
-        $scope.skills = response.data;
-        console.log(response.data);
-    });
+    $scope.home = function(){
+      $scope.step = 0;
+    }
+
+    function gatherData(){
+      $http.get('gather/return').then(function(response){
+          $scope.users = response.data;
+          console.log(response.data);
+
+      });
+      $http.get('gather/skills').then(function(response){
+          $scope.skills = response.data;
+          console.log(response.data);
+      });
+    }
+
+
+    $scope.updateData = function(){
+      $interval(gatherData, 60000);
+      console.log("Getting Data");
+    }
 
 
     $scope.search = function(){
       $scope.step = 4;
-
+      gatherData();
     };
 
     $scope.viewCard = function(name){
@@ -163,6 +176,9 @@ app.controller('formController', ['$scope', '$http', '$filter',  function($scope
       }, function(res){
         $scope.response = res.data || "There was an error in the submission";
         $scope.status = res.status;
+      }).then(function(){
+        gatherData();
+        $scope.step = 0;
       });
     };
 
